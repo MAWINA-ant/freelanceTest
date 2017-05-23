@@ -55,8 +55,8 @@ void Dialog::newGame(){
 
     QPropertyAnimation *animation = new QPropertyAnimation(mainMenuWidget, "geometry");
     animation->setDuration(2500);
-    animation->setStartValue(QRect(0, 0, 200, 130));
-    animation->setEndValue(QRect(0, -30, 200, 130));
+    animation->setStartValue(QRect(0, -40, 200, 130));
+    animation->setEndValue(QRect(0, -70, 200, 130));
 
     animation->start();
 }
@@ -71,8 +71,8 @@ void Dialog::buttonMainMenuClicked(){
     mainMenuWidget->setEnabled(true);
     QPropertyAnimation *animation = new QPropertyAnimation(mainMenuWidget, "geometry");
     animation->setDuration(2500);
-    animation->setStartValue(QRect(0, -30, 200, 130));
-    animation->setEndValue(QRect(0, 0, 200, 130));
+    animation->setStartValue(QRect(0, -70, 200, 130));
+    animation->setEndValue(QRect(0, -40, 200, 130));
 
     animation->start();
 }
