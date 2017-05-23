@@ -4,10 +4,11 @@
 #include "mainmenu.h"
 
 #include <QDialog>
-#include <QPushButton>
-#include <QLayout>
-#include <QTableWidget>
-#include <QHeaderView>
+//#include <QPushButton>
+//#include <QLayout>
+//#include <QTableWidget>
+//#include <QHeaderView>
+#include <QtWidgets>
 
 class Dialog : public QDialog
 {
