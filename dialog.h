@@ -29,6 +29,10 @@ private slots:
     void exit();
     void newGame();
     void buttonMainMenuClicked();
+
+    // QWidget interface
+protected:
+    void resizeEvent(QResizeEvent *event);
 };
 
 #endif // DIALOG_H

@@ -17,9 +17,8 @@ Dialog::~Dialog()
 }
 
 void Dialog::createMenu(){
-
-    mainMenuWidget = new mainMenu();
-    QSplitter *splitter = new QSplitter(Qt::Vertical);
+    setWindowFlags(windowFlags()|Qt::WindowMaximizeButtonHint);
+    mainMenuWidget = new mainMenu(this);
     qDebug() << mainMenuWidget->geometry();
     buttonMainMenu = new QPushButton("Главное меню");
     tableInventory = new QTableWidget(3,3);
@@ -42,22 +41,20 @@ void Dialog::createMenu(){
     hLayout->addWidget(tableInventory);
     hLayout->addLayout(vRightLayout);
     vLayout->addWidget(mainMenuWidget);
-    vLayout->addWidget(splitter);
     vLayout->addLayout(hLayout);
     setLayout(vLayout);
+    show();
+    buttonMainMenuClicked();
 }
 
 void Dialog::newGame(){
     tableInventory->setEnabled(true);
     buttonMainMenu->setEnabled(true);
     mainMenuWidget->setEnabled(false);
-
-
     QPropertyAnimation *animation = new QPropertyAnimation(mainMenuWidget, "geometry");
     animation->setDuration(2500);
-    animation->setStartValue(QRect(0, -40, 200, 130));
-    animation->setEndValue(QRect(0, -70, 200, 130));
-
+    animation->setStartValue(QRect(0, 0, size().width(), 50));
+    animation->setEndValue(QRect(0, -80, size().width(), 50));
     animation->start();
 }
 
@@ -70,9 +67,13 @@ void Dialog::buttonMainMenuClicked(){
     buttonMainMenu->setEnabled(false);
     mainMenuWidget->setEnabled(true);
     QPropertyAnimation *animation = new QPropertyAnimation(mainMenuWidget, "geometry");
-    animation->setDuration(2500);
-    animation->setStartValue(QRect(0, -70, 200, 130));
-    animation->setEndValue(QRect(0, -40, 200, 130));
-
+    animation->setDuration(2000);
+    animation->setStartValue(QRect(0, -80, size().width(), 50));
+    animation->setEndValue(QRect(0, 0, size().width(), 50));
     animation->start();
+}
+
+void Dialog::resizeEvent(QResizeEvent *event)
+{
+    mainMenuWidget->setGeometry(0, 0, size().width(), 50);
 }

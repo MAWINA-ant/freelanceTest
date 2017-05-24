@@ -4,13 +4,13 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QLayout>
-#include <QSplitter>
 
 class mainMenu : public QWidget
 {
     Q_OBJECT
 public:
     explicit mainMenu(QWidget *parent = 0);
+    void setBackGroundColor(QColor color){ backGroundColor = color; }
 
 signals:
     void newGame();
@@ -25,6 +25,10 @@ private slots:
 private:
     QPushButton *buttonNewGame;
     QPushButton *buttonExit;
+    QColor backGroundColor;
+
+protected:
+    void paintEvent(QPaintEvent *event);
 };
 
 #endif // MAINMENU_H
