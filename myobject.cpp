@@ -24,7 +24,7 @@ myObject::myObject(QWidget *parent)
 
 void myObject::dragEnterEvent(QDragEnterEvent *event)
 {
-    /*if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
+    if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
         if (event->source() == this) {
             event->setDropAction(Qt::MoveAction);
             event->accept();
@@ -33,7 +33,7 @@ void myObject::dragEnterEvent(QDragEnterEvent *event)
         }
     } else {
         event->ignore();
-    }*/
+    }
 }
 
 void myObject::dragMoveEvent(QDragMoveEvent *event)

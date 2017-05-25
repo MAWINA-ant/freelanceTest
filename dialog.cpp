@@ -22,6 +22,8 @@ void Dialog::createMenu(){
     myObjectWidget = new myObject(this);
     buttonMainMenu = new QPushButton("Главное меню");
     tableInventory = new QTableWidget(3,3);
+    tableInventory->viewport()->setAcceptDrops(true);
+    tableInventory->setAcceptDrops(true);
     tableInventory->setMaximumHeight(302);
     tableInventory->setMinimumHeight(302);
     tableInventory->setMaximumWidth(302);
