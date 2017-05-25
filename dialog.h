@@ -2,12 +2,9 @@
 #define DIALOG_H
 
 #include "mainmenu.h"
+#include "myobject.h"
 
 #include <QDialog>
-//#include <QPushButton>
-//#include <QLayout>
-//#include <QTableWidget>
-//#include <QHeaderView>
 #include <QtWidgets>
 
 class Dialog : public QDialog
@@ -24,13 +21,13 @@ private:
     QPushButton *buttonMainMenu;
     QTableWidget *tableInventory;
     mainMenu *mainMenuWidget;
+    myObject *myObjectWidget;
 
 private slots:
     void exit();
     void newGame();
     void buttonMainMenuClicked();
 
-    // QWidget interface
 protected:
     void resizeEvent(QResizeEvent *event);
 };

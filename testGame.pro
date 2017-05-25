@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,7 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         dialog.cpp \
-    mainmenu.cpp
+    mainmenu.cpp \
+    myobject.cpp
 
 HEADERS  += dialog.h \
-    mainmenu.h
+    mainmenu.h \
+    myobject.h
+
+RESOURCES += \
+    objects.qrc
+

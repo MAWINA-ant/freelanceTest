@@ -19,7 +19,7 @@ Dialog::~Dialog()
 void Dialog::createMenu(){
     setWindowFlags(windowFlags()|Qt::WindowMaximizeButtonHint);
     mainMenuWidget = new mainMenu(this);
-    qDebug() << mainMenuWidget->geometry();
+    myObjectWidget = new myObject(this);
     buttonMainMenu = new QPushButton("Главное меню");
     tableInventory = new QTableWidget(3,3);
     tableInventory->setMaximumHeight(302);
@@ -34,9 +34,11 @@ void Dialog::createMenu(){
     tableInventory->horizontalHeader()->hide();
     tableInventory->setEnabled(false);
     buttonMainMenu->setEnabled(false);
+    myObjectWidget->setEnabled(false);
     QHBoxLayout *hLayout = new QHBoxLayout();
     QVBoxLayout *vLayout = new QVBoxLayout();
     QVBoxLayout *vRightLayout = new QVBoxLayout();
+    vRightLayout->addWidget(myObjectWidget);
     vRightLayout->addWidget(buttonMainMenu);
     hLayout->addWidget(tableInventory);
     hLayout->addLayout(vRightLayout);
@@ -50,6 +52,7 @@ void Dialog::createMenu(){
 void Dialog::newGame(){
     tableInventory->setEnabled(true);
     buttonMainMenu->setEnabled(true);
+    myObjectWidget->setEnabled(true);
     mainMenuWidget->setEnabled(false);
     QPropertyAnimation *animation = new QPropertyAnimation(mainMenuWidget, "geometry");
     animation->setDuration(2500);
@@ -65,6 +68,7 @@ void Dialog::exit(){
 void Dialog::buttonMainMenuClicked(){
     tableInventory->setEnabled(false);
     buttonMainMenu->setEnabled(false);
+    myObjectWidget->setEnabled(false);
     mainMenuWidget->setEnabled(true);
     QPropertyAnimation *animation = new QPropertyAnimation(mainMenuWidget, "geometry");
     animation->setDuration(2000);
