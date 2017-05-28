@@ -5,6 +5,7 @@
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
 {
+    setAcceptDrops(true);
     createMenu();
     connect(mainMenuWidget, SIGNAL(newGame()), this, SLOT(newGame()));
     connect(mainMenuWidget, SIGNAL(exit()), this, SLOT(exit()));
@@ -18,23 +19,11 @@ Dialog::~Dialog()
 
 void Dialog::createMenu(){
     setWindowFlags(windowFlags()|Qt::WindowMaximizeButtonHint);
-    mainMenuWidget = new mainMenu(this);
-    myObjectWidget = new myObject(this);
+    mainMenuWidget = new mainMenu();
+    myObjectWidget = new myObject();
     buttonMainMenu = new QPushButton("Главное меню");
-    tableInventory = new QTableWidget(3,3);
-    tableInventory->viewport()->setAcceptDrops(true);
-    tableInventory->setAcceptDrops(true);
-    tableInventory->setMaximumHeight(302);
-    tableInventory->setMinimumHeight(302);
-    tableInventory->setMaximumWidth(302);
-    tableInventory->setMinimumWidth(302);
-    for (int i=0; i<3; i++){
-        tableInventory->setRowHeight(i,100);
-        tableInventory->setColumnWidth(i,100);
-    }
-    tableInventory->verticalHeader()->hide();
-    tableInventory->horizontalHeader()->hide();
-    tableInventory->setEnabled(false);
+    tableInventory = new inventory();
+    qDebug() << tableInventory->acceptDrops();
     buttonMainMenu->setEnabled(false);
     myObjectWidget->setEnabled(false);
     QHBoxLayout *hLayout = new QHBoxLayout();
@@ -59,7 +48,7 @@ void Dialog::newGame(){
     QPropertyAnimation *animation = new QPropertyAnimation(mainMenuWidget, "geometry");
     animation->setDuration(2500);
     animation->setStartValue(QRect(0, 0, size().width(), 50));
-    animation->setEndValue(QRect(0, -80, size().width(), 50));
+    animation->setEndValue(QRect(0, -70, size().width(), 50));
     animation->start();
 }
 
@@ -74,12 +63,17 @@ void Dialog::buttonMainMenuClicked(){
     mainMenuWidget->setEnabled(true);
     QPropertyAnimation *animation = new QPropertyAnimation(mainMenuWidget, "geometry");
     animation->setDuration(2000);
-    animation->setStartValue(QRect(0, -80, size().width(), 50));
+    animation->setStartValue(QRect(0, -70, size().width(), 50));
     animation->setEndValue(QRect(0, 0, size().width(), 50));
     animation->start();
 }
 
 void Dialog::resizeEvent(QResizeEvent *event)
 {
-    mainMenuWidget->setGeometry(0, 0, size().width(), 50);
+    if (mainMenuWidget->isEnabled())
+        mainMenuWidget->setGeometry(0, 0, size().width(), 50);
+    else
+        mainMenuWidget->setGeometry(0, -70, size().width(), 50);
 }
+
+

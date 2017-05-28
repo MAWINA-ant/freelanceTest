@@ -21,8 +21,52 @@ myObject::myObject(QWidget *parent)
     objectIcon->show();
     objectIcon->setAttribute(Qt::WA_DeleteOnClose);
 }
+/*
+void myObject::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton
+         && geometry().contains(event->pos())) {
 
-void myObject::dragEnterEvent(QDragEnterEvent *event)
+        dragStartPosition = event->pos();
+        QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
+        if (!child)
+            return;
+        QPixmap pixmap = *child->pixmap();
+        QByteArray itemData;
+        QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+        dataStream << pixmap << QPoint(event->pos() - child->pos());
+        QMimeData *mimeData = new QMimeData;
+        mimeData->setData("application/x-dnditemdata", itemData);
+        QDrag *drag = new QDrag(this);
+        drag->setMimeData(mimeData);
+        //drag->setPixmap(iconPixmap);
+        Qt::DropAction dropAction = drag->exec();
+    }
+}
+*/
+void myObject::mouseMoveEvent(QMouseEvent *event)
+ {
+     if (!(event->buttons() & Qt::LeftButton))
+         return;
+     if ((event->pos() - dragStartPosition).manhattanLength()
+          < QApplication::startDragDistance())
+         return;
+
+     //QDrag *drag = new QDrag(this);
+     //QMimeData *mimeData = new QMimeData;
+
+     //QByteArray itemData;
+     //QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+     //dataStream << pixmap << QPoint(event->pos() - child->pos());
+
+     //mimeData->setData("application/x-dnditemdata",);
+     //drag->setMimeData(mimeData);
+
+     //Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
+
+ }
+
+/*void myObject::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
         if (event->source() == this) {
@@ -76,38 +120,38 @@ void myObject::dropEvent(QDropEvent *event)
         event->ignore();
     }
 }
-
+*/
 void myObject::mousePressEvent(QMouseEvent *event)
 {
-    QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
-    if (!child)
-        return;
+    if (event->button() == Qt::LeftButton){
 
-    QPixmap pixmap = *child->pixmap();
+        dragStartPosition = event->pos();
+        QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
+        if (!child)
+            return;
 
-    QByteArray itemData;
-    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-    dataStream << pixmap << QPoint(event->pos() - child->pos());
+        QPixmap pixmap = *child->pixmap();
 
-    QMimeData *mimeData = new QMimeData;
-    mimeData->setData("application/x-dnditemdata", itemData);
+        QByteArray itemData;
+        QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+        dataStream << pixmap << QPoint(event->pos() - child->pos());
 
-    QDrag *drag = new QDrag(this);
-    drag->setMimeData(mimeData);
-    drag->setPixmap(pixmap);
-    drag->setHotSpot(event->pos() - child->pos());
+        QMimeData *mimeData = new QMimeData;
+        mimeData->setData("application/x-dnditemdata", itemData);
 
-    QPixmap tempPixmap = pixmap;
-    QPainter painter;
-    painter.begin(&tempPixmap);
-    painter.fillRect(pixmap.rect(), QColor(127, 127, 127, 127));
-    painter.end();
+        QDrag *drag = new QDrag(this);
+        drag->setMimeData(mimeData);
+        drag->setPixmap(pixmap);
+        drag->setHotSpot(event->pos() - child->pos());
 
-    child->setPixmap(tempPixmap);
+        QPixmap tempPixmap = pixmap;
+        QPainter painter;
+        painter.begin(&tempPixmap);
+        painter.fillRect(pixmap.rect(), QColor(127, 127, 127, 127));
+        painter.end();
 
-    if (drag->exec(Qt::CopyAction | Qt::MoveAction, Qt::CopyAction) == Qt::MoveAction) {
-        child->close();
-    } else {
+        child->setPixmap(tempPixmap);
+        drag->exec(Qt::CopyAction);
         child->show();
         child->setPixmap(pixmap);
     }

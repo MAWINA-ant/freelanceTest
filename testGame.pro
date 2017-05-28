@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         dialog.cpp \
     mainmenu.cpp \
-    myobject.cpp
+    myobject.cpp \
+    inventory.cpp
 
 HEADERS  += dialog.h \
     mainmenu.h \
-    myobject.h
+    myobject.h \
+    inventory.h
 
 RESOURCES += \
     objects.qrc

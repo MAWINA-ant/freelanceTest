@@ -3,6 +3,7 @@
 
 #include "mainmenu.h"
 #include "myobject.h"
+#include "inventory.h"
 
 #include <QDialog>
 #include <QtWidgets>
@@ -30,6 +31,8 @@ private slots:
 
 protected:
     void resizeEvent(QResizeEvent *event);
+
+
 };
 
 #endif // DIALOG_H
