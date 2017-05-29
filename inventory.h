@@ -16,8 +16,9 @@ private:
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
-    bool dropMimeData(int row, int column, const QMimeData *data, Qt::DropAction action);
     void dragMoveEvent(QDragMoveEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    //void mouseMoveEvent(QMouseEvent *event);
 };
 
 #endif // INVENTORY_H
