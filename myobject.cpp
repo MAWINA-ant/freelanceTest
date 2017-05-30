@@ -1,5 +1,7 @@
 #include "myobject.h"
 
+int const amount = 1;
+
 myObject::myObject(QWidget *parent)
     : QFrame(parent)
 {
@@ -134,7 +136,7 @@ void myObject::mousePressEvent(QMouseEvent *event)
 
         QByteArray itemData;
         QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-        dataStream << pixmap << QPoint(event->pos() - child->pos());
+        dataStream << pixmap << amount;
 
         QMimeData *mimeData = new QMimeData;
         mimeData->setData("application/x-dnditemdata", itemData);
@@ -143,7 +145,8 @@ void myObject::mousePressEvent(QMouseEvent *event)
         drag->setMimeData(mimeData);
         drag->setPixmap(pixmap);
         drag->setHotSpot(event->pos() - child->pos());
-
+        qDebug() << event->pos();
+        qDebug() << child->pos();
         QPixmap tempPixmap = pixmap;
         QPainter painter;
         painter.begin(&tempPixmap);

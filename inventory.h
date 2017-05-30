@@ -10,7 +10,7 @@ public:
 
 private:
     void setSize();
-
+    int getCurrentAmount() {return 0;}
 
     // QWidget interface
 protected:

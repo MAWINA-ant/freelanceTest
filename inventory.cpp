@@ -5,16 +5,11 @@ inventory::inventory(QWidget *parent) : QTableWidget(parent)
     setAcceptDrops(true);
     //setDragEnabled(true);
     //setDragDropOverwriteMode(true);
-    //setDragDropMode(QAbstractItemView::DragDrop);
+    setDragDropMode(QAbstractItemView::DragDrop);
     //setDefaultDropAction(Qt::CopyAction);
     setRowCount(3);
     setColumnCount(3);
     setSize();
-    /*for (int i=0; i<3; i++)
-        for (int j=0; j<3; j++){
-            QTableWidgetItem *item = new QTableWidgetItem();
-            setItem(i, j, item);
-        }*/
 }
 
 void inventory::setSize(){
@@ -47,15 +42,19 @@ void inventory::dropEvent(QDropEvent *event)
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
         QPixmap pixmap;
-        QPoint offset;
-        dataStream >> pixmap >> offset;
+        int amount;
 
+        dataStream >> pixmap >> amount;
+
+        setIconSize(QSize(85,85));
+        setFont(QFont("Times", 6));
         QTableWidgetItem *item = new QTableWidgetItem();
-
-        QPixmap newPixmap = pixmap.scaled(70,70,Qt::KeepAspectRatio);
-        item->setText("as");
+        item->setIcon(QIcon(QPixmap(pixmap)));
+        if (itemAt(event->pos()))
+            item->setText(QString::number(itemAt(event->pos())->text().toInt() + amount));
+        else
+            item->setText(QString::number(amount));
         item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
-        item->setData( Qt::DecorationRole, newPixmap );
         setItem(rowAt(event->pos().y()), columnAt(event->pos().x()), item);
         event->acceptProposedAction();
         event->accept();
@@ -67,7 +66,31 @@ void inventory::dropEvent(QDropEvent *event)
 
 void inventory::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton){
+    if (itemAt(event->pos())) {
+        QTableWidgetItem *item = itemAt(event->pos());
+        if (event->button() == Qt::LeftButton){
+            QPixmap pixmap = item->icon().pixmap(QSize(100,100));
+            int amount;
+            amount = item->text().toInt();
+            QByteArray itemData;
+            QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+            dataStream << pixmap << amount;
+            QMimeData *mimeData = new QMimeData;
+            mimeData->setData("application/x-dnditemdata", itemData);
+            QDrag *drag = new QDrag(this);
+            drag->setMimeData(mimeData);
+            drag->setPixmap(pixmap);
+            drag->setHotSpot(2*event->pos());
+            qDebug() << event->pos();
+            drag->exec(Qt::MoveAction);
+        }
+        else if (event->button() == Qt::RightButton){
+            if (item->text().toInt() > 1)
+                item->setText(QString::number(item->text().toInt() - 1));
+            else
+                delete item;
+        }
+    }
 
         /*QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
         if (!child)
@@ -77,7 +100,7 @@ void inventory::mousePressEvent(QMouseEvent *event)
 
         QByteArray itemData;
         QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-        dataStream << pixmap << QPoint(event->pos() - child->pos());
+        dataStream << pixmap << amount;
 
         QMimeData *mimeData = new QMimeData;
         mimeData->setData("application/x-dnditemdata", itemData);
@@ -97,12 +120,7 @@ void inventory::mousePressEvent(QMouseEvent *event)
         drag->exec(Qt::CopyAction);
         child->show();
         child->setPixmap(pixmap);*/
-    }
-    else if (event->button() == Qt::RightButton){
-        if (itemAt(event->pos())){
-            delete itemAt(event->pos());
-        }
-    }
+
 }
 
 /*void inventory::mouseMoveEvent(QMouseEvent *event)
