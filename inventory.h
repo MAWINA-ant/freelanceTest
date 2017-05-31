@@ -2,6 +2,9 @@
 #define INVENTORY_H
 
 #include <QtWidgets>
+#include <QPair>
+#include <QSound>
+#include "myobject.h"
 
 class inventory : public QTableWidget
 {
@@ -11,6 +14,11 @@ public:
 private:
     void setSize();
     int getCurrentAmount() {return 0;}
+
+    int countColmnAndRow;
+    QPair<myObject::objectType, double> pair;
+    //QList<QPair> lstOfCells;
+    //QSound sound;
 
     // QWidget interface
 protected:

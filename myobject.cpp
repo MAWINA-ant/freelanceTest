@@ -9,7 +9,7 @@ myObject::myObject(QWidget *parent)
     setMaximumSize(100, 100);
     setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
     setAcceptDrops(true);
-    setType(objectType::Apple);
+    setType(Apple);
     switch (myObjectType) {
         case Apple:
             iconPath =":/images/apple.jpg";
@@ -145,8 +145,6 @@ void myObject::mousePressEvent(QMouseEvent *event)
         drag->setMimeData(mimeData);
         drag->setPixmap(pixmap);
         drag->setHotSpot(event->pos() - child->pos());
-        qDebug() << event->pos();
-        qDebug() << child->pos();
         QPixmap tempPixmap = pixmap;
         QPainter painter;
         painter.begin(&tempPixmap);

@@ -3,4 +3,7 @@
         <file>apple.jpg</file>
         <file>pear.jpg</file>
     </qresource>
+    <qresource prefix="/sounds">
+        <file>soundApple.wav</file>
+    </qresource>
 </RCC>

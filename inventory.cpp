@@ -3,13 +3,15 @@
 inventory::inventory(QWidget *parent) : QTableWidget(parent)
 {
     setAcceptDrops(true);
+    countColmnAndRow = 3;
     //setDragEnabled(true);
     //setDragDropOverwriteMode(true);
     setDragDropMode(QAbstractItemView::DragDrop);
     //setDefaultDropAction(Qt::CopyAction);
-    setRowCount(3);
-    setColumnCount(3);
+    setRowCount(countColmnAndRow);
+    setColumnCount(countColmnAndRow);
     setSize();
+    //QModelIndex index = QTableWidget::model();
 }
 
 void inventory::setSize(){
@@ -43,10 +45,11 @@ void inventory::dropEvent(QDropEvent *event)
 
         QPixmap pixmap;
         int amount;
+        QPoint oldItemPos;
 
-        dataStream >> pixmap >> amount;
+        dataStream >> pixmap >> amount >> oldItemPos;
 
-        setIconSize(QSize(85,85));
+        setIconSize(QSize(75,80));
         setFont(QFont("Times", 6));
         QTableWidgetItem *item = new QTableWidgetItem();
         item->setIcon(QIcon(QPixmap(pixmap)));
@@ -58,6 +61,7 @@ void inventory::dropEvent(QDropEvent *event)
         setItem(rowAt(event->pos().y()), columnAt(event->pos().x()), item);
         event->acceptProposedAction();
         event->accept();
+        delete itemAt(oldItemPos);
     }
     else {
         event->ignore();
@@ -74,17 +78,18 @@ void inventory::mousePressEvent(QMouseEvent *event)
             amount = item->text().toInt();
             QByteArray itemData;
             QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-            dataStream << pixmap << amount;
+            dataStream << pixmap << amount << event->pos(); // передача иконки, кол-ва элементов в ячейке и позиция перетаскиваемой ячейки,
+                                                            // чтобы после её удалить
             QMimeData *mimeData = new QMimeData;
             mimeData->setData("application/x-dnditemdata", itemData);
             QDrag *drag = new QDrag(this);
             drag->setMimeData(mimeData);
             drag->setPixmap(pixmap);
-            drag->setHotSpot(2*event->pos());
-            qDebug() << event->pos();
-            drag->exec(Qt::MoveAction);
+            drag->setHotSpot(event->pos() - QPoint(item->column()*100, item->row()*100));
+            drag->exec(Qt::CopyAction);
         }
         else if (event->button() == Qt::RightButton){
+            QSound::play(":/sounds/soundApple.wav");
             if (item->text().toInt() > 1)
                 item->setText(QString::number(item->text().toInt() - 1));
             else
@@ -133,6 +138,7 @@ void inventory::mousePressEvent(QMouseEvent *event)
 void inventory::dragMoveEvent(QDragMoveEvent *event)
 {
     if (event->mimeData()->hasFormat("application/x-dnditemdata")){
+
         event->acceptProposedAction();
     }
     else {
