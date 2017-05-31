@@ -7,11 +7,9 @@ inventory::inventory(QWidget *parent) : QTableWidget(parent)
     //setDragEnabled(true);
     //setDragDropOverwriteMode(true);
     setDragDropMode(QAbstractItemView::DragDrop);
-    //setDefaultDropAction(Qt::CopyAction);
     setRowCount(countColmnAndRow);
     setColumnCount(countColmnAndRow);
     setSize();
-    //QModelIndex index = QTableWidget::model();
 }
 
 void inventory::setSize(){

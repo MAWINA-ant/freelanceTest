@@ -6,6 +6,13 @@
 #include <QSound>
 #include "myobject.h"
 
+struct cell     //Создаем структуру!
+{
+    int index;       //индекс ячейки
+    myObject::objectType type;        //тип объекта
+    int amount;   //количество объектов
+};
+
 class inventory : public QTableWidget
 {
 public:
@@ -16,9 +23,7 @@ private:
     int getCurrentAmount() {return 0;}
 
     int countColmnAndRow;
-    QPair<myObject::objectType, double> pair;
-    //QList<QPair> lstOfCells;
-    //QSound sound;
+    QList<cell> MyListColor;
 
     // QWidget interface
 protected:
