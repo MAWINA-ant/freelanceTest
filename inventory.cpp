@@ -3,16 +3,27 @@
 inventory::inventory(QWidget *parent) : QTableWidget(parent)
 {
     setAcceptDrops(true);
-    countColmnAndRow = 3;
+
     //setDragEnabled(true);
     //setDragDropOverwriteMode(true);
     setDragDropMode(QAbstractItemView::DragDrop);
-    setRowCount(countColmnAndRow);
-    setColumnCount(countColmnAndRow);
+
     setSize();
 }
 
+cell inventory::setCell(int newIndex, QString newType, int newAmount)
+{
+    cell newCell;
+    newCell.index = newIndex;
+    newCell.type = newType;
+    newCell.amount = newAmount;
+    return newCell;
+}
+
 void inventory::setSize(){
+    setSizeInventory(3);
+    setRowCount(sizeInventory);
+    setColumnCount(sizeInventory);
     setMaximumHeight(302);
     setMinimumHeight(302);
     setMaximumWidth(302);
@@ -44,22 +55,51 @@ void inventory::dropEvent(QDropEvent *event)
         QPixmap pixmap;
         int amount;
         QPoint oldItemPos;
+        QString myObjectType;
+        int currentCellIndex;
+        currentCellIndex = rowAt(event->pos().y()) * getSizeInventory() + columnAt(event->pos().x());
 
-        dataStream >> pixmap >> amount >> oldItemPos;
+        dataStream >> pixmap >> amount >> myObjectType >> oldItemPos;
 
         setIconSize(QSize(75,80));
         setFont(QFont("Times", 6));
         QTableWidgetItem *item = new QTableWidgetItem();
         item->setIcon(QIcon(QPixmap(pixmap)));
-        if (itemAt(event->pos()))
-            item->setText(QString::number(itemAt(event->pos())->text().toInt() + amount));
-        else
-            item->setText(QString::number(amount));
+        if (itemAt(oldItemPos)){ // если перетаскиваем внутри таблицы
+            if (itemAt(event->pos())){ //если складываем стопки
+                int oldCellIndex;
+                oldCellIndex = itemAt(oldItemPos)->row() * getSizeInventory() + itemAt(oldItemPos)->column();
+                if (map[oldCellIndex].type != map[currentCellIndex].type)
+                    return;
+                cell newCell = setCell(currentCellIndex, map[oldCellIndex].type, map[oldCellIndex].amount + map[currentCellIndex].amount);
+                map[newCell.index] = newCell;
+                item->setText(QString::number(newCell.amount));
+                delete itemAt(oldItemPos);
+            }
+            else{ //если просто перемещаем на пустую ячейку
+                int oldCellIndex;
+                oldCellIndex = itemAt(oldItemPos)->row() * getSizeInventory() + itemAt(oldItemPos)->column();
+                cell newCell = setCell(currentCellIndex, map[oldCellIndex].type, map[oldCellIndex].amount);
+                map[newCell.index] = newCell;
+                item->setText(QString::number(newCell.amount));
+                delete itemAt(oldItemPos);
+            }
+        }
+        else {
+            if (itemAt(event->pos())){ //если добавляем из исходного к существующему
+                map[currentCellIndex].amount += 1;
+                item->setText(QString::number(map[currentCellIndex].amount));
+            }
+            else { //если добавляем новый
+                cell newCell = setCell(rowAt(event->pos().y()) * getSizeInventory() + columnAt(event->pos().x()), myObjectType, amount);
+                map[newCell.index] = newCell;
+                item->setText(QString::number(newCell.amount));
+            }
+        }
         item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
         setItem(rowAt(event->pos().y()), columnAt(event->pos().x()), item);
         event->acceptProposedAction();
         event->accept();
-        delete itemAt(oldItemPos);
     }
     else {
         event->ignore();
@@ -70,14 +110,18 @@ void inventory::mousePressEvent(QMouseEvent *event)
 {
     if (itemAt(event->pos())) {
         QTableWidgetItem *item = itemAt(event->pos());
+        int currentCellIndex;
+        currentCellIndex = item->row() * getSizeInventory() + item->column();
         if (event->button() == Qt::LeftButton){
             QPixmap pixmap = item->icon().pixmap(QSize(100,100));
             int amount;
-            amount = item->text().toInt();
             QByteArray itemData;
             QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-            dataStream << pixmap << amount << event->pos(); // передача иконки, кол-ва элементов в ячейке и позиция перетаскиваемой ячейки,
-                                                            // чтобы после её удалить
+            QString myObjectType;
+            myObjectType = map[currentCellIndex].type;
+            amount = map[currentCellIndex].amount;
+            dataStream << pixmap << amount << myObjectType << event->pos(); // передача иконки, кол-ва элементов в ячейке и позиция перетаскиваемой ячейки,
+                                                                            // чтобы после её удалить
             QMimeData *mimeData = new QMimeData;
             mimeData->setData("application/x-dnditemdata", itemData);
             QDrag *drag = new QDrag(this);
@@ -88,42 +132,14 @@ void inventory::mousePressEvent(QMouseEvent *event)
         }
         else if (event->button() == Qt::RightButton){
             QSound::play(":/sounds/soundApple.wav");
-            if (item->text().toInt() > 1)
-                item->setText(QString::number(item->text().toInt() - 1));
+            if (item->text().toInt() > 1){
+                item->setText(QString::number(map[currentCellIndex].amount - 1));
+                map[currentCellIndex].amount -= 1;
+            }
             else
                 delete item;
         }
     }
-
-        /*QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
-        if (!child)
-            return;
-
-        QPixmap pixmap = *child->pixmap();
-
-        QByteArray itemData;
-        QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-        dataStream << pixmap << amount;
-
-        QMimeData *mimeData = new QMimeData;
-        mimeData->setData("application/x-dnditemdata", itemData);
-
-        QDrag *drag = new QDrag(this);
-        drag->setMimeData(mimeData);
-        drag->setPixmap(pixmap);
-        drag->setHotSpot(event->pos() - child->pos());
-
-        QPixmap tempPixmap = pixmap;
-        QPainter painter;
-        painter.begin(&tempPixmap);
-        painter.fillRect(pixmap.rect(), QColor(127, 127, 127, 127));
-        painter.end();
-
-        child->setPixmap(tempPixmap);
-        drag->exec(Qt::CopyAction);
-        child->show();
-        child->setPixmap(pixmap);*/
-
 }
 
 /*void inventory::mouseMoveEvent(QMouseEvent *event)

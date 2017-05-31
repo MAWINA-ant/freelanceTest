@@ -7,14 +7,15 @@
 class myObject : public QFrame
 {
 public:
-    enum objectType { Pear , Apple };
-    myObject(QWidget *parent = 0);
+    enum objectType {  Apple , Pear }; // перечисление типов
+    myObject(objectType type, QWidget *parent = 0);
 
 private:
     void setType(objectType type) {myObjectType = type;}
     QLabel *objectIcon;
-    QString iconPath;
-    objectType myObjectType;
+    QString iconPath; // путь к иконке
+    QString objectTypeString; // тип строкой
+    objectType myObjectType; // текущий тип
     QPoint dragStartPosition;
 
 

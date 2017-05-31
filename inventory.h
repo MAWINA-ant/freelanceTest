@@ -9,7 +9,7 @@
 struct cell     //Создаем структуру!
 {
     int index;       //индекс ячейки
-    myObject::objectType type;        //тип объекта
+    QString type;        //тип объекта
     int amount;   //количество объектов
 };
 
@@ -19,11 +19,21 @@ public:
     inventory(QWidget *parent = 0);
 
 private:
-    void setSize();
-    int getCurrentAmount() {return 0;}
+    cell setCell(int newIndex, QString newType, int newAmount);
 
-    int countColmnAndRow;
-    QList<cell> MyListColor;
+
+    void setSizeInventory(int size){ sizeInventory = size; }
+    int getSizeInventory() {return sizeInventory; }
+    /*void setCellIndex(int newIndex);
+    int getCellIndex();
+    void setCellType(QString newType);
+    QString getCellType();
+    void setCellAmount(int newAmount);
+    int getCellAmount();*/
+    void setSize();
+    int sizeInventory; // кол-во строк и столбцов
+    //QList<cell> myListCells;
+    QMap<int, cell> map;
 
     // QWidget interface
 protected:

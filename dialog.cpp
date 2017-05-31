@@ -20,7 +20,7 @@ Dialog::~Dialog()
 void Dialog::createMenu(){
     setWindowFlags(windowFlags()|Qt::WindowMaximizeButtonHint);
     mainMenuWidget = new mainMenu();
-    myObjectWidget = new myObject();
+    myObjectWidget = new myObject(myObject::Apple);
     buttonMainMenu = new QPushButton("Главное меню");
     tableInventory = new inventory();
     qDebug() << tableInventory->acceptDrops();
