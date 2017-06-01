@@ -7,8 +7,10 @@ inventory::inventory(QWidget *parent) : QTableWidget(parent)
     //setDragEnabled(true);
     //setDragDropOverwriteMode(true);
     setDragDropMode(QAbstractItemView::DragDrop);
-
+    setSelectionBehavior(QAbstractItemView::SelectItems);
+    setSelectionMode(QAbstractItemView::MultiSelection);
     setSize();
+    mySound = new QSound(":/sounds/soundApple.wav");
 }
 
 cell inventory::setCell(int newIndex, QString newType, int newAmount)
@@ -66,14 +68,17 @@ void inventory::dropEvent(QDropEvent *event)
         QTableWidgetItem *item = new QTableWidgetItem();
         item->setIcon(QIcon(QPixmap(pixmap)));
         if (itemAt(oldItemPos)){ // если перетаскиваем внутри таблицы
+            itemAt(oldItemPos)->setSelected(false);
             if (itemAt(event->pos())){ //если складываем стопки
                 int oldCellIndex;
                 oldCellIndex = itemAt(oldItemPos)->row() * getSizeInventory() + itemAt(oldItemPos)->column();
+                if (oldCellIndex == currentCellIndex)
+                    return;
                 if (map[oldCellIndex].type != map[currentCellIndex].type)
                     return;
-                cell newCell = setCell(currentCellIndex, map[oldCellIndex].type, map[oldCellIndex].amount + map[currentCellIndex].amount);
-                map[newCell.index] = newCell;
-                item->setText(QString::number(newCell.amount));
+                map[currentCellIndex].amount += map[oldCellIndex].amount;
+                map.remove(oldCellIndex);
+                item->setText(QString::number(map[currentCellIndex].amount));
                 delete itemAt(oldItemPos);
             }
             else{ //если просто перемещаем на пустую ячейку
@@ -82,6 +87,7 @@ void inventory::dropEvent(QDropEvent *event)
                 cell newCell = setCell(currentCellIndex, map[oldCellIndex].type, map[oldCellIndex].amount);
                 map[newCell.index] = newCell;
                 item->setText(QString::number(newCell.amount));
+                map.remove(oldCellIndex);
                 delete itemAt(oldItemPos);
             }
         }
@@ -109,9 +115,11 @@ void inventory::dropEvent(QDropEvent *event)
 void inventory::mousePressEvent(QMouseEvent *event)
 {
     if (itemAt(event->pos())) {
+        dragStartPosition = event->pos();
         QTableWidgetItem *item = itemAt(event->pos());
         int currentCellIndex;
         currentCellIndex = item->row() * getSizeInventory() + item->column();
+        item->setSelected(true);
         if (event->button() == Qt::LeftButton){
             QPixmap pixmap = item->icon().pixmap(QSize(100,100));
             int amount;
@@ -131,28 +139,33 @@ void inventory::mousePressEvent(QMouseEvent *event)
             drag->exec(Qt::CopyAction);
         }
         else if (event->button() == Qt::RightButton){
-            QSound::play(":/sounds/soundApple.wav");
-            if (item->text().toInt() > 1){
+            mySound->play();
+            if (map[currentCellIndex].amount > 1){
                 item->setText(QString::number(map[currentCellIndex].amount - 1));
                 map[currentCellIndex].amount -= 1;
             }
-            else
+            else{
+                map.remove(currentCellIndex);
+                item->setSelected(false);
                 delete item;
+            }
         }
     }
 }
 
 /*void inventory::mouseMoveEvent(QMouseEvent *event)
 {
-    //QTableWidgetItem *item = itemAt(event->pos());
-    //item->setSelected(true);
+
 }*/
 
+/*void inventory::mouseReleaseEvent(QMouseEvent *event)
+{
+    if ()
+}*/
 
 void inventory::dragMoveEvent(QDragMoveEvent *event)
 {
     if (event->mimeData()->hasFormat("application/x-dnditemdata")){
-
         event->acceptProposedAction();
     }
     else {

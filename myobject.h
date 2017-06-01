@@ -23,7 +23,6 @@ private:
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
-    //void dragMoveEvent(QDragMoveEvent *event);
 };
 
 #endif // MYOBJECT_H

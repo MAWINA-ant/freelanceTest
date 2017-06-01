@@ -38,7 +38,6 @@ void myObject::mouseMoveEvent(QMouseEvent *event)
 void myObject::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton){
-
         dragStartPosition = event->pos();
         QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
         if (!child)

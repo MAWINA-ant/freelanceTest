@@ -10,7 +10,6 @@ mainMenu::mainMenu(QWidget *parent) : QWidget(parent)
     hLayout->addWidget(buttonNewGame);
     hLayout->addWidget(buttonExit);
     setLayout(hLayout);
-    qDebug() << "razmer knopok" << buttonNewGame->geometry() << buttonExit->geometry();
     connect(buttonNewGame, SIGNAL(clicked(bool)), this, SLOT(buttonNewGameClicked()));
     connect(buttonExit, SIGNAL(clicked(bool)), this, SLOT(buttonExitClicked()));
 }

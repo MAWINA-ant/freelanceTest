@@ -23,7 +23,6 @@ void Dialog::createMenu(){
     myObjectWidget = new myObject(myObject::Apple);
     buttonMainMenu = new QPushButton("Главное меню");
     tableInventory = new inventory();
-    qDebug() << tableInventory->acceptDrops();
     buttonMainMenu->setEnabled(false);
     myObjectWidget->setEnabled(false);
     QHBoxLayout *hLayout = new QHBoxLayout();
