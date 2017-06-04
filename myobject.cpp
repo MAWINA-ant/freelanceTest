@@ -26,6 +26,11 @@ myObject::myObject(objectType type,QWidget *parent)
     objectIcon->setAttribute(Qt::WA_DeleteOnClose);
 }
 
+myObject::~myObject()
+{
+
+}
+
 void myObject::mouseMoveEvent(QMouseEvent *event)
 {
      if (!(event->buttons() & Qt::LeftButton))

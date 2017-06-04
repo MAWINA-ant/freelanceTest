@@ -3,9 +3,6 @@
 inventory::inventory(QWidget *parent) : QTableWidget(parent)
 {
     setAcceptDrops(true);
-
-    //setDragEnabled(true);
-    //setDragDropOverwriteMode(true);
     setDragDropMode(QAbstractItemView::DragDrop);
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::MultiSelection);
@@ -36,6 +33,28 @@ void inventory::setSize(){
     }
     verticalHeader()->hide();
     horizontalHeader()->hide();
+}
+
+void inventory::clearTable()
+{
+    map.clear();
+    clear();
+    emit clearInventory(getSizeInventory());
+}
+
+void inventory::updateFromDataBase(QString typeObject, int count, int cellIndex, QString iconPath)
+{
+    if (map[cellIndex]){
+        map[cellIndex].amount = count;
+        QTableWidgetItem *item = item(cellIndex/size, cellIndex % size);
+        item->setIcon(QIcon(QPixmap(iconPath)));
+    }
+    else{
+        cell newCell = setCell(cellIndex, typeObject, count);
+        map[newCell.index] = newCell;
+        QTableWidgetItem *item = item(cellIndex/size, cellIndex % size);
+        item->setIcon(QIcon(QPixmap(iconPath)));
+    }
 }
 
 void inventory::dragEnterEvent(QDragEnterEvent *event)
@@ -77,9 +96,11 @@ void inventory::dropEvent(QDropEvent *event)
                 if (map[oldCellIndex].type != map[currentCellIndex].type)
                     return;
                 map[currentCellIndex].amount += map[oldCellIndex].amount;
+                emit deleteCellInventory(map[oldCellIndex].index);
                 map.remove(oldCellIndex);
                 item->setText(QString::number(map[currentCellIndex].amount));
                 delete itemAt(oldItemPos);
+                emit updateCellInventory(map[currentCellIndex].amount, map[currentCellIndex].index);
             }
             else{ //если просто перемещаем на пустую ячейку
                 int oldCellIndex;
@@ -87,19 +108,23 @@ void inventory::dropEvent(QDropEvent *event)
                 cell newCell = setCell(currentCellIndex, map[oldCellIndex].type, map[oldCellIndex].amount);
                 map[newCell.index] = newCell;
                 item->setText(QString::number(newCell.amount));
+                emit deleteCellInventory(map[oldCellIndex].index);
                 map.remove(oldCellIndex);
                 delete itemAt(oldItemPos);
+                emit addedNewInventory(map[currentCellIndex].type, map[currentCellIndex].amount, map[currentCellIndex].index, getSizeInventory());
             }
         }
         else {
             if (itemAt(event->pos())){ //если добавляем из исходного к существующему
                 map[currentCellIndex].amount += 1;
                 item->setText(QString::number(map[currentCellIndex].amount));
+                emit updateCellInventory(map[currentCellIndex].amount, map[currentCellIndex].index);
             }
             else { //если добавляем новый
                 cell newCell = setCell(rowAt(event->pos().y()) * getSizeInventory() + columnAt(event->pos().x()), myObjectType, amount);
                 map[newCell.index] = newCell;
                 item->setText(QString::number(newCell.amount));
+                emit addedNewInventory(map[currentCellIndex].type, map[currentCellIndex].amount, map[currentCellIndex].index, getSizeInventory());
             }
         }
         item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
@@ -156,11 +181,11 @@ void inventory::mousePressEvent(QMouseEvent *event)
 /*void inventory::mouseMoveEvent(QMouseEvent *event)
 {
 
-}*/
+}
 
-/*void inventory::mouseReleaseEvent(QMouseEvent *event)
+void inventory::mouseReleaseEvent(QMouseEvent *event)
 {
-    if ()
+
 }*/
 
 void inventory::dragMoveEvent(QDragMoveEvent *event)

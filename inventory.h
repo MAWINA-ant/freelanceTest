@@ -15,6 +15,7 @@ struct cell     //Создаем структуру!
 
 class inventory : public QTableWidget
 {
+    Q_OBJECT
 public:
     inventory(QWidget *parent = 0);
 
@@ -30,7 +31,17 @@ private:
     QPoint dragStartPosition;
     QRect highlightedRect;
 
-    // QWidget interface
+
+signals:
+    void addedNewInventory(QString, int, int, int);
+    void updateCellInventory(int, int);
+    void deleteCellInventory(int);
+    void clearInventory(int);
+
+public slots:
+    void clearTable();
+    void updateFromDataBase(QString typeObject, int count, int cellIndex, QString iconPath); // обновление таблицы из БД
+
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);

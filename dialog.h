@@ -4,6 +4,7 @@
 #include "mainmenu.h"
 #include "myobject.h"
 #include "inventory.h"
+#include "mydatabase.h"
 
 #include <QDialog>
 #include <QtWidgets>
@@ -20,9 +21,18 @@ private:
     void createMenu();
 
     QPushButton *buttonMainMenu;
-    QTableWidget *tableInventory;
+    inventory *tableInventory;
     mainMenu *mainMenuWidget;
     myObject *myObjectWidget;
+    mydatabase *mydatabaseObject;
+
+signals:
+    void addedNewInventory(QString, int, int, int);
+    void updateCellInventory(int, int);
+    void deleteCellInventory(int);
+    void addedNewObject(QString, QString);
+    void removeObject(QString);
+    void clearTableInventory();
 
 private slots:
     void exit();

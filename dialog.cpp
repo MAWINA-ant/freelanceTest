@@ -5,16 +5,30 @@
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
 {
+    mydatabaseObject = new mydatabase();
     setAcceptDrops(true);
     createMenu();
     connect(mainMenuWidget, SIGNAL(newGame()), this, SLOT(newGame()));
     connect(mainMenuWidget, SIGNAL(exit()), this, SLOT(exit()));
     connect(buttonMainMenu, SIGNAL(clicked(bool)), this, SLOT(buttonMainMenuClicked()));
+    connect(tableInventory, SIGNAL(addedNewInventory(QString,int,int,int)), this, SIGNAL(addedNewInventory(QString,int,int,int)));
+    connect(this, SIGNAL(addedNewInventory(QString,int,int,int)), mydatabaseObject, SLOT(insertDataInventory(QString,int,int,int)));
+    connect(tableInventory, SIGNAL(updateCellInventory(int,int)), this, SIGNAL(updateCellInventory(int,int)));
+    connect(this, SIGNAL(updateCellInventory(int,int)), mydatabaseObject, SLOT(updateDataInventory(int,int)));
+    connect(tableInventory, SIGNAL(deleteCellInventory(int)), this, SIGNAL(deleteCellInventory(int)));
+    connect(this, SIGNAL(deleteCellInventory(int)), mydatabaseObject, SLOT(removeDataInventory(int)));
+    connect(this, SIGNAL(addedNewObject(QString,QString)), mydatabaseObject, SLOT(insertDataObject(QString,QString)));
+    connect(this, SIGNAL(removeObject(QString)), mydatabaseObject, SLOT(removeDataObject(QString)));
+    connect(myObjectWidget, SIGNAL(addedNewObject(QString,QString)), mydatabaseObject, SLOT(insertDataObject(QString,QString)));
+    connect(myObjectWidget, SIGNAL(removeObject(QString)), mydatabaseObject, SLOT(removeDataObject(QString)));
+    connect(this, SIGNAL(clearTableInventory()), tableInventory, SLOT(clearTable()));
+    connect(tableInventory, SIGNAL(clearInventory(int)), mydatabaseObject, SLOT(clearDataBase(int)));
+    myObjectWidget->addedNewObject(myObjectWidget->getObjectType(), myObjectWidget->geticonPath());
 }
 
 Dialog::~Dialog()
 {
-
+    myObjectWidget->removeObject(myObjectWidget->getObjectType());
 }
 
 void Dialog::createMenu(){
@@ -37,6 +51,7 @@ void Dialog::createMenu(){
     setLayout(vLayout);
     show();
     buttonMainMenuClicked();
+
 }
 
 void Dialog::newGame(){
@@ -49,6 +64,7 @@ void Dialog::newGame(){
     animation->setStartValue(QRect(0, 0, size().width(), 50));
     animation->setEndValue(QRect(0, -70, size().width(), 50));
     animation->start();
+    emit clearTableInventory();
 }
 
 void Dialog::exit(){

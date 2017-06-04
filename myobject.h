@@ -6,9 +6,14 @@
 
 class myObject : public QFrame
 {
+    Q_OBJECT
+
 public:
     enum objectType {  Apple , Pear }; // перечисление типов
     myObject(objectType type, QWidget *parent = 0);
+    QString getObjectType(){return objectTypeString;}
+    QString geticonPath(){return iconPath;}
+    ~myObject();
 
 private:
     void setType(objectType type) {myObjectType = type;}
@@ -18,6 +23,9 @@ private:
     objectType myObjectType; // текущий тип
     QPoint dragStartPosition;
 
+signals:
+    void addedNewObject(QString, QString);
+    void removeObject(QString);
 
     // QWidget interface
 protected:
