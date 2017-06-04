@@ -23,7 +23,7 @@ private:
 
 signals:
 
-public slots:
+private slots:
     void insertDataInventory(QString, int, int, int);
     void updateDataInventory(int, int);
     void removeDataInventory(int);

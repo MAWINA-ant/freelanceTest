@@ -2,10 +2,14 @@
 
 inventory::inventory(QWidget *parent) : QTableWidget(parent)
 {
+    setDragDropOverwriteMode(true);
     setAcceptDrops(true);
     setDragDropMode(QAbstractItemView::DragDrop);
     setSelectionBehavior(QAbstractItemView::SelectItems);
-    setSelectionMode(QAbstractItemView::MultiSelection);
+    setSelectionMode(QAbstractItemView::SingleSelection);
+    setDragEnabled(true);
+    viewport()->setAcceptDrops(true);
+    setDropIndicatorShown(true);
     setSize();
     mySound = new QSound(":/sounds/soundApple.wav");
 }
@@ -44,16 +48,20 @@ void inventory::clearTable()
 
 void inventory::updateFromDataBase(QString typeObject, int count, int cellIndex, QString iconPath)
 {
-    if (map[cellIndex]){
+    if (map.contains(cellIndex)){
         map[cellIndex].amount = count;
-        QTableWidgetItem *item = item(cellIndex/size, cellIndex % size);
-        item->setIcon(QIcon(QPixmap(iconPath)));
+        QTableWidgetItem *item = this->item(cellIndex / getSizeInventory(), cellIndex % getSizeInventory());
+        item->setText(QString::number(map[cellIndex].amount));
+        item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
     }
     else{
         cell newCell = setCell(cellIndex, typeObject, count);
         map[newCell.index] = newCell;
-        QTableWidgetItem *item = item(cellIndex/size, cellIndex % size);
+        QTableWidgetItem *item = new QTableWidgetItem();
         item->setIcon(QIcon(QPixmap(iconPath)));
+        item->setText(QString::number(map[cellIndex].amount));
+        item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
+        setItem(cellIndex / getSizeInventory(), cellIndex % getSizeInventory(), item);
     }
 }
 
@@ -177,6 +185,7 @@ void inventory::mousePressEvent(QMouseEvent *event)
         }
     }
 }
+
 
 /*void inventory::mouseMoveEvent(QMouseEvent *event)
 {

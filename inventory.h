@@ -38,7 +38,7 @@ signals:
     void deleteCellInventory(int);
     void clearInventory(int);
 
-public slots:
+private slots:
     void clearTable();
     void updateFromDataBase(QString typeObject, int count, int cellIndex, QString iconPath); // обновление таблицы из БД
 
@@ -47,8 +47,6 @@ protected:
     void dropEvent(QDropEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void mousePressEvent(QMouseEvent *event);
-    //void mouseMoveEvent(QMouseEvent *event);
-    //void mouseReleaseEvent(QMouseEvent *event);
 };
 
 #endif // INVENTORY_H
