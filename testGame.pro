@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     mainmenu.cpp \
     myobject.cpp \
     inventory.cpp \
-    mydatabase.cpp
+    mydatabase.cpp \
+    identification.cpp
 
 HEADERS  += dialog.h \
     mainmenu.h \
     myobject.h \
     inventory.h \
-    mydatabase.h
+    mydatabase.h \
+    identification.h
 
 RESOURCES += \
     objects.qrc

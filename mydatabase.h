@@ -22,6 +22,7 @@ private:
     QSqlDatabase db;
 
 signals:
+    void sendData(QString, int, int ,QString);
 
 private slots:
     void insertDataInventory(QString, int, int, int);
@@ -30,6 +31,7 @@ private slots:
     void insertDataObject(QString, QString);
     void removeDataObject(QString);
     void clearDataBase(int);
+    void receivedData();
 };
 
 #endif // MYDATABASE_H

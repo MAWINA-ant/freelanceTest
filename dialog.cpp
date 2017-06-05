@@ -23,6 +23,8 @@ Dialog::Dialog(QWidget *parent)
     connect(myObjectWidget, SIGNAL(removeObject(QString)), mydatabaseObject, SLOT(removeDataObject(QString)));
     connect(this, SIGNAL(clearTableInventory()), tableInventory, SLOT(clearTable()));
     connect(tableInventory, SIGNAL(clearInventory(int)), mydatabaseObject, SLOT(clearDataBase(int)));
+    connect(getDatafromDB, SIGNAL(clicked(bool)), mydatabaseObject, SLOT(receivedData()));
+    connect(mydatabaseObject, SIGNAL(sendData(QString,int,int,QString)), tableInventory, SLOT(updateFromDataBase(QString,int,int,QString)));
     myObjectWidget->addedNewObject(myObjectWidget->getObjectType(), myObjectWidget->geticonPath());
 }
 
@@ -36,6 +38,7 @@ void Dialog::createMenu(){
     mainMenuWidget = new mainMenu();
     myObjectWidget = new myObject(myObject::Apple);
     buttonMainMenu = new QPushButton("Главное меню");
+    getDatafromDB = new QPushButton("Data");
     tableInventory = new inventory();
     buttonMainMenu->setEnabled(false);
     myObjectWidget->setEnabled(false);
@@ -44,14 +47,13 @@ void Dialog::createMenu(){
     QVBoxLayout *vRightLayout = new QVBoxLayout();
     vRightLayout->addWidget(myObjectWidget);
     vRightLayout->addWidget(buttonMainMenu);
+    vRightLayout->addWidget(getDatafromDB);
     hLayout->addWidget(tableInventory);
     hLayout->addLayout(vRightLayout);
     vLayout->addWidget(mainMenuWidget);
     vLayout->addLayout(hLayout);
     setLayout(vLayout);
-    show();
     buttonMainMenuClicked();
-
 }
 
 void Dialog::newGame(){

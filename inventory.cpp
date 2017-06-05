@@ -2,14 +2,13 @@
 
 inventory::inventory(QWidget *parent) : QTableWidget(parent)
 {
-    setDragDropOverwriteMode(true);
+    //setDragDropOverwriteMode(true);
     setAcceptDrops(true);
-    setDragDropMode(QAbstractItemView::DragDrop);
-    setSelectionBehavior(QAbstractItemView::SelectItems);
-    setSelectionMode(QAbstractItemView::SingleSelection);
-    setDragEnabled(true);
-    viewport()->setAcceptDrops(true);
-    setDropIndicatorShown(true);
+    //setDragDropMode(QAbstractItemView::DragDrop);
+    //setSelectionBehavior(QAbstractItemView::SelectItems);
+    //setSelectionMode(QAbstractItemView::SingleSelection);
+    //setDragEnabled(true);
+    //setDropIndicatorShown(true);
     setSize();
     mySound = new QSound(":/sounds/soundApple.wav");
 }
@@ -55,6 +54,7 @@ void inventory::updateFromDataBase(QString typeObject, int count, int cellIndex,
         item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
     }
     else{
+        //QTableWidgetItem *oldItem = this->item(cellIndex / getSizeInventory(), cellIndex % getSizeInventory());
         cell newCell = setCell(cellIndex, typeObject, count);
         map[newCell.index] = newCell;
         QTableWidgetItem *item = new QTableWidgetItem();
@@ -71,7 +71,7 @@ void inventory::dragEnterEvent(QDragEnterEvent *event)
         event->acceptProposedAction();
     }
     else {
-        event->ignore();
+        event->accept();
     }
 }
 
@@ -141,7 +141,7 @@ void inventory::dropEvent(QDropEvent *event)
         event->accept();
     }
     else {
-        event->ignore();
+        event->accept();
     }
 }
 
@@ -201,8 +201,23 @@ void inventory::dragMoveEvent(QDragMoveEvent *event)
 {
     if (event->mimeData()->hasFormat("application/x-dnditemdata")){
         event->acceptProposedAction();
+        QAbstractItemView *d = reinterpret_cast<QAbstractItemView*>(this);
+        QModelIndex index = indexAt(event->pos());
+        highlightedRect = d->visualRect(index);
+
+        viewport()->update();
     }
     else {
-        event->ignore();
+        event->accept();
     }
 }
+
+void inventory::paintEvent(QPaintEvent *event)
+{
+    QTableWidget::paintEvent(event);  //let it paint the default stuff!
+    QPainter painter(this->viewport());  //you need to paint on the viewport
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(Qt::blue);
+    painter.drawRect(highlightedRect);
+}
+

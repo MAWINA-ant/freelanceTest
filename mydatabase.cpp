@@ -95,6 +95,19 @@ void mydatabase::clearDataBase(int size)
         }
 }
 
+void mydatabase::receivedData()
+{
+    QSqlQuery query("SELECT a.typeObject, a.count, a.cellIndex, b.iconPath "
+                    "FROM inventory as a, object as b WHERE a.typeObject = b.typeObject");
+    while (query.next()) {
+        QString typeObject = query.value(0).toString();
+        int count = query.value(1).toInt();
+        int cellIndex = query.value(2).toInt();
+        QString iconPath = query.value(3).toString();
+        emit sendData(typeObject, count, cellIndex, iconPath);
+    }
+}
+
 bool mydatabase::createConnection()
 {
     db = QSqlDatabase::addDatabase("QSQLITE");

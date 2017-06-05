@@ -47,6 +47,7 @@ protected:
     void dropEvent(QDropEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent *event);
 };
 
 #endif // INVENTORY_H
