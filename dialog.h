@@ -35,9 +35,10 @@ private:
     QTcpSocket *clientSocket;
     QLineEdit*  m_ptxtInput;
     QPushButton* pcmd;
+    QTextEdit*  m_ptxt;
 
     QTcpServer *tcpServer;
-    QTextEdit*  m_ptxt;
+    QTextEdit*  m_ptxtServer;
     quint16     m_nNextBlockSize;
 
 signals:
@@ -64,6 +65,9 @@ public slots:
     void slotReadyRead();
     void slotError(QAbstractSocket::SocketError);
     void slotSendToServer();
+    void slotSendToServer(QString,int,int,int);
+    void slotSendToServer(int,int);
+    void slotSendToServer(int);
     void slotConnected();
 
 protected:
