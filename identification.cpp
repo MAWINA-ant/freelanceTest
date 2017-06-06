@@ -20,14 +20,12 @@ identification::~identification()
 
 void identification::serverRoleChosen()
 {
-    currentRole = 0; // server
-    emit chosenRole();
+    currentRole = "Server"; // server
     close();
 }
 
 void identification::clientRoleChosen()
 {
-    currentRole = 1; // client
-    emit chosenRole();
+    currentRole = "Client"; // client
     close();
 }

@@ -5,9 +5,12 @@
 #include "myobject.h"
 #include "inventory.h"
 #include "mydatabase.h"
+#include "identification.h"
 
 #include <QDialog>
 #include <QtWidgets>
+#include <QTcpSocket>
+#include <QTcpServer>
 
 class Dialog : public QDialog
 {
@@ -19,6 +22,7 @@ public:
 
 private:
     void createMenu();
+    void sendToClient(QTcpSocket* pSocket, const QString& str);
 
     QPushButton *buttonMainMenu;
     inventory *tableInventory;
@@ -26,6 +30,15 @@ private:
     myObject *myObjectWidget;
     mydatabase *mydatabaseObject;
     QPushButton *getDatafromDB;
+    identification *roleDialog;
+
+    QTcpSocket *clientSocket;
+    QLineEdit*  m_ptxtInput;
+    QPushButton* pcmd;
+
+    QTcpServer *tcpServer;
+    QTextEdit*  m_ptxt;
+    quint16     m_nNextBlockSize;
 
 signals:
     void addedNewInventory(QString, int, int, int);     // сигнал для добавления строки в таблицу inventory в БД
@@ -39,6 +52,19 @@ private slots:
     void exit();
     void newGame();
     void buttonMainMenuClicked();
+
+public slots:
+    //*********************************************
+    //server slots
+    void slotNewConnection();
+    void slotReadClient();
+
+    //***************************************************
+    //client slots
+    void slotReadyRead();
+    void slotError(QAbstractSocket::SocketError);
+    void slotSendToServer();
+    void slotConnected();
 
 protected:
     void resizeEvent(QResizeEvent *event);

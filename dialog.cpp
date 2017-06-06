@@ -5,6 +5,51 @@
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
 {
+    roleDialog = new identification();
+    roleDialog->exec();
+    if (roleDialog->getRole() == "Server"){
+        tcpServer = new QTcpServer(this);
+        if (!tcpServer->listen(QHostAddress::Any, 2323)) {
+            QMessageBox::critical(0,
+                                  "Server Error",
+                                  "Unable to start the server:"
+                                  + tcpServer->errorString()
+                                     );
+            tcpServer->close();
+            return;
+        }
+        connect(tcpServer, SIGNAL(newConnection()), this, SLOT(slotNewConnection()));
+
+    }
+    else if (roleDialog->getRole() == "Client"){
+
+
+        clientSocket = new QTcpSocket(this);
+        clientSocket->connectToHost("localhost", 2323);
+        connect(clientSocket, SIGNAL(connected()), SLOT(slotConnected()));
+        connect(clientSocket, SIGNAL(readyRead()), SLOT(slotReadyRead()));
+        connect(clientSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(slotError(QAbstractSocket::SocketError)));
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+    m_ptxt = new QTextEdit;
+    m_ptxt->setReadOnly(true);
+    m_ptxtInput = new QLineEdit;
+    connect(m_ptxtInput, SIGNAL(returnPressed()), this, SLOT(slotSendToServer()));
+    pcmd = new QPushButton("&Send");
+    connect(pcmd, SIGNAL(clicked()), SLOT(slotSendToServer()));
+
+
     mydatabaseObject = new mydatabase();
     setAcceptDrops(true);
     createMenu();
@@ -48,12 +93,31 @@ void Dialog::createMenu(){
     vRightLayout->addWidget(myObjectWidget);
     vRightLayout->addWidget(buttonMainMenu);
     vRightLayout->addWidget(getDatafromDB);
+
+
+    vRightLayout->addWidget(m_ptxt);
+    vRightLayout->addWidget(m_ptxtInput);
+    vRightLayout->addWidget(pcmd);
+
+
     hLayout->addWidget(tableInventory);
     hLayout->addLayout(vRightLayout);
     vLayout->addWidget(mainMenuWidget);
     vLayout->addLayout(hLayout);
     setLayout(vLayout);
+    show();
     buttonMainMenuClicked();
+}
+
+void Dialog::sendToClient(QTcpSocket *pSocket, const QString &str)
+{
+    QByteArray  arrBlock;
+    QDataStream out(&arrBlock, QIODevice::WriteOnly);
+    //out.setVersion(QDataStream::Qt_4_2);
+    out << quint16(0) << QTime::currentTime() << str;
+    out.device()->seek(0);
+    out << quint16(arrBlock.size() - sizeof(quint16));
+    pSocket->write(arrBlock);
 }
 
 void Dialog::newGame(){
@@ -83,6 +147,96 @@ void Dialog::buttonMainMenuClicked(){
     animation->setStartValue(QRect(0, -70, size().width(), 50));
     animation->setEndValue(QRect(0, 0, size().width(), 50));
     animation->start();
+}
+
+void Dialog::slotNewConnection()
+{
+    QTcpSocket* pClientSocket = tcpServer->nextPendingConnection();
+    connect(pClientSocket, SIGNAL(disconnected()), pClientSocket, SLOT(deleteLater()));
+    connect(pClientSocket, SIGNAL(readyRead()), this, SLOT(slotReadClient()));
+    sendToClient(pClientSocket, "Server Response: Connected!");
+}
+
+void Dialog::slotReadClient()
+{
+    QTcpSocket* pClientSocket = (QTcpSocket*)sender();
+    QDataStream in(pClientSocket);
+    //in.setVersion(QDataStream::Qt_4_2);
+    for (;;) {
+        if (!m_nNextBlockSize) {
+            if (pClientSocket->bytesAvailable() < sizeof(quint16)) {
+                break;
+            }
+            in >> m_nNextBlockSize;
+        }
+        if (pClientSocket->bytesAvailable() < m_nNextBlockSize) {
+            break;
+        }
+        QTime   time;
+        QString str;
+        in >> time >> str;
+        QString strMessage = time.toString() + " " + "Client has sended - " + str;
+        m_ptxt->append(strMessage);
+        m_nNextBlockSize = 0;
+        sendToClient(pClientSocket, "Server Response: Received \"" + str + "\"");
+    }
+}
+
+void Dialog::slotReadyRead()
+{
+    QDataStream in(clientSocket);
+        //in.setVersion(QDataStream::Qt_4_2);
+        for (;;) {
+            if (!m_nNextBlockSize) {
+                if (clientSocket->bytesAvailable() < sizeof(quint16)) {
+                    break;
+                }
+                in >> m_nNextBlockSize;
+            }
+
+            if (clientSocket->bytesAvailable() < m_nNextBlockSize) {
+                break;
+            }
+            QTime   time;
+            QString str;
+            in >> time >> str;
+
+            m_ptxt->append(time.toString() + " " + str);
+            m_nNextBlockSize = 0;
+        }
+}
+
+void Dialog::slotError(QAbstractSocket::SocketError err)
+{
+    QString strError =
+            "Error: " + (err == QAbstractSocket::HostNotFoundError ?
+                         "The host was not found." :
+                         err == QAbstractSocket::RemoteHostClosedError ?
+                         "The remote host is closed." :
+                         err == QAbstractSocket::ConnectionRefusedError ?
+                         "The connection was refused." :
+                         QString(clientSocket->errorString())
+                        );
+    m_ptxt->append(strError);
+}
+
+void Dialog::slotSendToServer()
+{
+    QByteArray  arrBlock;
+        QDataStream out(&arrBlock, QIODevice::WriteOnly);
+        //out.setVersion(QDataStream::Qt_4_2);
+        out << quint16(0) << QTime::currentTime() << m_ptxtInput->text();
+
+        out.device()->seek(0);
+        out << quint16(arrBlock.size() - sizeof(quint16));
+
+        clientSocket->write(arrBlock);
+        m_ptxtInput->setText("");
+}
+
+void Dialog::slotConnected()
+{
+    m_ptxt->append("Received the connected() signal");
 }
 
 void Dialog::resizeEvent(QResizeEvent *event)

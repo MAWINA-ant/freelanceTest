@@ -11,13 +11,13 @@ class identification : public QDialog
 public:
     identification(QWidget *parent = 0);
     ~identification();
-    int getRole(){return currentRole;}
+    QString getRole(){return currentRole;}
 
 signals:
     void chosenRole();
 
 private:
-    int currentRole;
+    QString currentRole;
     QPushButton *serverRole;
     QPushButton *clientRole;
 
