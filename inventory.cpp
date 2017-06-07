@@ -36,33 +36,44 @@ void inventory::setSize(){
     }
     verticalHeader()->hide();
     horizontalHeader()->hide();
+    setIconSize(QSize(75,80));
+    setFont(QFont("Times", 6));
 }
 
 void inventory::clearTable()
 {
     map.clear();
     clear();
-    emit clearInventory(getSizeInventory());
+    emit clearAllInventory(getSizeInventory());
 }
 
-void inventory::updateFromDataBase(QString typeObject, int count, int cellIndex, QString iconPath)
+void inventory::addFromSocket(QString type, int count, int cellIndex, int size, QIcon icon)
 {
-    if (map.contains(cellIndex)){
-        map[cellIndex].amount = count;
-        QTableWidgetItem *item = this->item(cellIndex / getSizeInventory(), cellIndex % getSizeInventory());
-        item->setText(QString::number(map[cellIndex].amount));
-        item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
-    }
-    else{
-        //QTableWidgetItem *oldItem = this->item(cellIndex / getSizeInventory(), cellIndex % getSizeInventory());
-        cell newCell = setCell(cellIndex, typeObject, count);
-        map[newCell.index] = newCell;
-        QTableWidgetItem *item = new QTableWidgetItem();
-        item->setIcon(QIcon(QPixmap(iconPath)));
-        item->setText(QString::number(map[cellIndex].amount));
-        item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
-        setItem(cellIndex / getSizeInventory(), cellIndex % getSizeInventory(), item);
-    }
+    cell newCell = setCell(cellIndex, type, count);
+    map[newCell.index] = newCell;
+    QTableWidgetItem *item = new QTableWidgetItem();
+    item->setIcon(icon);
+    item->setText(QString::number(map[cellIndex].amount));
+    item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
+    setItem(cellIndex / getSizeInventory(), cellIndex % getSizeInventory(), item);
+    emit addedNewInventory(type, count, cellIndex, size);
+}
+
+void inventory::changeFromSocket(int count, int cellIndex)
+{
+    map[cellIndex].amount = count;
+    QTableWidgetItem *item = this->item(cellIndex / getSizeInventory(), cellIndex % getSizeInventory());
+    item->setText(QString::number(map[cellIndex].amount));
+    item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
+    emit updateCellInventory(count, cellIndex);
+}
+
+void inventory::removeFromSocket(int cellIndex)
+{
+    map.remove(cellIndex);
+    QTableWidgetItem *item = this->item(cellIndex / getSizeInventory(), cellIndex % getSizeInventory());
+    delete item;
+    emit deleteCellInventory(cellIndex);
 }
 
 void inventory::dragEnterEvent(QDragEnterEvent *event)
@@ -90,8 +101,6 @@ void inventory::dropEvent(QDropEvent *event)
 
         dataStream >> pixmap >> amount >> myObjectType >> oldItemPos;
 
-        setIconSize(QSize(75,80));
-        setFont(QFont("Times", 6));
         QTableWidgetItem *item = new QTableWidgetItem();
         item->setIcon(QIcon(QPixmap(pixmap)));
         if (itemAt(oldItemPos)){ // если перетаскиваем внутри таблицы
@@ -120,6 +129,7 @@ void inventory::dropEvent(QDropEvent *event)
                 map.remove(oldCellIndex);
                 delete itemAt(oldItemPos);
                 emit addedNewInventory(map[currentCellIndex].type, map[currentCellIndex].amount, map[currentCellIndex].index, getSizeInventory());
+                emit addedToSocket(map[currentCellIndex].type, map[currentCellIndex].amount, map[currentCellIndex].index, getSizeInventory(), item->icon());
             }
         }
         else {
@@ -133,6 +143,7 @@ void inventory::dropEvent(QDropEvent *event)
                 map[newCell.index] = newCell;
                 item->setText(QString::number(newCell.amount));
                 emit addedNewInventory(map[currentCellIndex].type, map[currentCellIndex].amount, map[currentCellIndex].index, getSizeInventory());
+                emit addedToSocket(map[currentCellIndex].type, map[currentCellIndex].amount, map[currentCellIndex].index, getSizeInventory(), item->icon());
             }
         }
         item->setTextAlignment(Qt::AlignBottom | Qt::AlignRight);
@@ -176,8 +187,10 @@ void inventory::mousePressEvent(QMouseEvent *event)
             if (map[currentCellIndex].amount > 1){
                 item->setText(QString::number(map[currentCellIndex].amount - 1));
                 map[currentCellIndex].amount -= 1;
+                emit updateCellInventory(map[currentCellIndex].amount, map[currentCellIndex].index);
             }
             else{
+                emit deleteCellInventory(map[currentCellIndex].index);
                 map.remove(currentCellIndex);
                 item->setSelected(false);
                 delete item;

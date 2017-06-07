@@ -7,8 +7,8 @@ identification::identification(QWidget *parent)
     clientRole = new QPushButton("Клиент");
     QLabel *ipAddressLabel = new QLabel("IP адресс:");
     QLabel *portLabel = new QLabel("Порт:");
-    ipAddressLine = new QLineEdit();
-    portLine = new QLineEdit();
+    ipAddressLine = new QLineEdit("localhost");
+    portLine = new QLineEdit("2323");
     QHBoxLayout *hLayout1 = new QHBoxLayout();
     QHBoxLayout *hLayout2 = new QHBoxLayout();
     QHBoxLayout *hLayout3 = new QHBoxLayout();

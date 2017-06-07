@@ -24,8 +24,8 @@ private:
     QPoint dragStartPosition;
 
 signals:
-    void addedNewObject(QString, QString);
-    void removeObject(QString);
+    //void addedNewObject(QString, QString);
+    //void removeObject(QString);
 
     // QWidget interface
 protected:

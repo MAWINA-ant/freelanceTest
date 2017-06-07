@@ -34,13 +34,16 @@ private:
 
 signals:
     void addedNewInventory(QString, int, int, int);
+    void addedToSocket(QString, int, int, int, QIcon);
     void updateCellInventory(int, int);
     void deleteCellInventory(int);
-    void clearInventory(int);
+    void clearAllInventory(int);
 
-private slots:
+public slots:
     void clearTable();
-    void updateFromDataBase(QString typeObject, int count, int cellIndex, QString iconPath); // обновление таблицы из БД
+    void addFromSocket(QString, int, int , int, QIcon);
+    void changeFromSocket(int, int);
+    void removeFromSocket(int);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

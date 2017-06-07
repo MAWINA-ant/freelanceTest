@@ -15,8 +15,10 @@
 class Dialog : public QDialog
 {
     Q_OBJECT
+    //Q_ENUMS(clientServerOperation)
 
 public:
+    //enum clientServerOperation{ add, change, remove };
     Dialog(QWidget *parent = 0);
     ~Dialog();
 
@@ -29,25 +31,27 @@ private:
     mainMenu *mainMenuWidget;
     myObject *myObjectWidget;
     mydatabase *mydatabaseObject;
-    QPushButton *getDatafromDB;
     identification *roleDialog;
 
     QTcpSocket *clientSocket;
-    QLineEdit*  m_ptxtInput;
-    QPushButton* pcmd;
     QTextEdit*  m_ptxt;
 
     QTcpServer *tcpServer;
+    //QTcpSocket *serverSocket;
     QTextEdit*  m_ptxtServer;
     quint16     m_nNextBlockSize;
 
+    //clientServerOperation operation;
+
 signals:
-    void addedNewInventory(QString, int, int, int);     // сигнал для добавления строки в таблицу inventory в БД
-    void updateCellInventory(int, int);                 // сигнал для обновления строки в таблицу inventory в БД
-    void deleteCellInventory(int);                      // сигнал для удаления строки в таблицу inventory в БД
+
     void addedNewObject(QString, QString);              // сигнал для добавления строки в таблицу object в БД
     void removeObject(QString);                         // сигнал для удаления строки в таблицу object в БД
     void clearTableInventory();                         // сигнал для очистки таблицы inventory в БД
+
+    void addToSocket(QString, int, int , int, QIcon);
+    void changeToSocket(int, int);
+    void removeToSocket(int);
 
 private slots:
     void exit();
@@ -59,15 +63,17 @@ public slots:
     //server slots
     void slotNewConnection();
     void slotReadClient();
+    void slotSendAddedToClient(QString,int,int,int,QIcon);
+    void slotSendUpdateToClient(int,int);
+    void slotSendDeleteToClient(int);
 
     //***************************************************
     //client slots
     void slotReadyRead();
     void slotError(QAbstractSocket::SocketError);
-    void slotSendToServer();
-    void slotSendToServer(QString,int,int,int);
-    void slotSendToServer(int,int);
-    void slotSendToServer(int);
+    void slotSendAddedToServer(QString,int,int,int,QIcon);
+    void slotSendUpdateToServer(int,int);
+    void slotSendDeleteToServer(int);
     void slotConnected();
 
 protected:
