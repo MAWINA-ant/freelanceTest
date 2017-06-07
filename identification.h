@@ -17,6 +17,7 @@ public:
 
 signals:
     void chosenRole();
+    void closeDialog();
 
 private:
     QString currentRole;
@@ -30,6 +31,9 @@ private:
 private slots:
     void serverRoleChosen();
     void clientRoleChosen();
+
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // IDENTIFICATION_H

@@ -52,7 +52,7 @@ void myObject::mousePressEvent(QMouseEvent *event)
 
         QByteArray itemData;
         QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-        dataStream << pixmap << amount << objectTypeString;
+        dataStream << pixmap << amount << objectTypeString << QPoint(2000,2000);
 
         QMimeData *mimeData = new QMimeData;
         mimeData->setData("application/x-dnditemdata", itemData);

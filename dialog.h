@@ -15,16 +15,13 @@
 class Dialog : public QDialog
 {
     Q_OBJECT
-    //Q_ENUMS(clientServerOperation)
 
 public:
-    //enum clientServerOperation{ add, change, remove };
     Dialog(QWidget *parent = 0);
     ~Dialog();
 
 private:
     void createMenu();
-    void sendToClient(QTcpSocket* pSocket, const QString& str);
 
     QPushButton *buttonMainMenu;
     inventory *tableInventory;
@@ -34,16 +31,13 @@ private:
     identification *roleDialog;
 
     QTcpSocket *clientSocket;
-    QTextEdit*  m_ptxt;
 
     QTcpServer *tcpServer;
-    //QTcpSocket *serverSocket;
-    QTextEdit*  m_ptxtServer;
-    quint16     m_nNextBlockSize;
-
-    //clientServerOperation operation;
+    QTcpSocket *serverSocket;
+    quint16     nextBlockSize;
 
 signals:
+    void newGame();
 
     void addedNewObject(QString, QString);              // сигнал для добавления строки в таблицу object в БД
     void removeObject(QString);                         // сигнал для удаления строки в таблицу object в БД
@@ -54,15 +48,17 @@ signals:
     void removeToSocket(int);
 
 private slots:
-    void exit();
-    void newGame();
+    void exit();    
     void buttonMainMenuClicked();
 
 public slots:
+
+    void slotNewGame();
     //*********************************************
     //server slots
     void slotNewConnection();
     void slotReadClient();
+    void slotSendNewGameToClient();
     void slotSendAddedToClient(QString,int,int,int,QIcon);
     void slotSendUpdateToClient(int,int);
     void slotSendDeleteToClient(int);
@@ -71,6 +67,7 @@ public slots:
     //client slots
     void slotReadyRead();
     void slotError(QAbstractSocket::SocketError);
+    void slotSendNewGameToServer();
     void slotSendAddedToServer(QString,int,int,int,QIcon);
     void slotSendUpdateToServer(int,int);
     void slotSendDeleteToServer(int);
@@ -78,8 +75,6 @@ public slots:
 
 protected:
     void resizeEvent(QResizeEvent *event);
-
-
 };
 
 #endif // DIALOG_H

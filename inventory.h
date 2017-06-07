@@ -33,11 +33,14 @@ private:
 
 
 signals:
-    void addedNewInventory(QString, int, int, int);
-    void addedToSocket(QString, int, int, int, QIcon);
+    void addedNewInventory(QString, int, int, int);    
     void updateCellInventory(int, int);
     void deleteCellInventory(int);
     void clearAllInventory(int);
+
+    void addedToSocket(QString, int, int, int, QIcon);
+    void updateToSocket(int, int);
+    void deleteToSocket(int);
 
 public slots:
     void clearTable();

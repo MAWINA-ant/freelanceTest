@@ -47,3 +47,9 @@ void identification::clientRoleChosen()
     port = portLine->text().toInt();
     close();
 }
+
+void identification::closeEvent(QCloseEvent *event)
+{
+    emit closeDialog();
+    event->accept();
+}

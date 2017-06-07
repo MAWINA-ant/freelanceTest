@@ -114,10 +114,12 @@ void inventory::dropEvent(QDropEvent *event)
                     return;
                 map[currentCellIndex].amount += map[oldCellIndex].amount;
                 emit deleteCellInventory(map[oldCellIndex].index);
+                emit deleteToSocket(map[oldCellIndex].index);
                 map.remove(oldCellIndex);
                 item->setText(QString::number(map[currentCellIndex].amount));
                 delete itemAt(oldItemPos);
                 emit updateCellInventory(map[currentCellIndex].amount, map[currentCellIndex].index);
+                emit updateToSocket(map[currentCellIndex].amount, map[currentCellIndex].index);
             }
             else{ //если просто перемещаем на пустую ячейку
                 int oldCellIndex;
@@ -126,6 +128,7 @@ void inventory::dropEvent(QDropEvent *event)
                 map[newCell.index] = newCell;
                 item->setText(QString::number(newCell.amount));
                 emit deleteCellInventory(map[oldCellIndex].index);
+                emit deleteToSocket(map[oldCellIndex].index);
                 map.remove(oldCellIndex);
                 delete itemAt(oldItemPos);
                 emit addedNewInventory(map[currentCellIndex].type, map[currentCellIndex].amount, map[currentCellIndex].index, getSizeInventory());
@@ -136,6 +139,7 @@ void inventory::dropEvent(QDropEvent *event)
             if (itemAt(event->pos())){ //если добавляем из исходного к существующему
                 map[currentCellIndex].amount += 1;
                 item->setText(QString::number(map[currentCellIndex].amount));
+                emit updateToSocket(map[currentCellIndex].amount, map[currentCellIndex].index);
                 emit updateCellInventory(map[currentCellIndex].amount, map[currentCellIndex].index);
             }
             else { //если добавляем новый
@@ -187,10 +191,12 @@ void inventory::mousePressEvent(QMouseEvent *event)
             if (map[currentCellIndex].amount > 1){
                 item->setText(QString::number(map[currentCellIndex].amount - 1));
                 map[currentCellIndex].amount -= 1;
+                emit updateToSocket(map[currentCellIndex].amount, map[currentCellIndex].index);
                 emit updateCellInventory(map[currentCellIndex].amount, map[currentCellIndex].index);
             }
             else{
                 emit deleteCellInventory(map[currentCellIndex].index);
+                emit deleteToSocket(map[currentCellIndex].index);
                 map.remove(currentCellIndex);
                 item->setSelected(false);
                 delete item;
