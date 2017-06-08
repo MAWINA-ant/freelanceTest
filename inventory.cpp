@@ -2,14 +2,8 @@
 
 inventory::inventory(QWidget *parent) : QTableWidget(parent)
 {
-    //setDragDropOverwriteMode(true);
     setAcceptDrops(true);
-    //setDragDropMode(QAbstractItemView::DragDrop);
-    //setSelectionBehavior(QAbstractItemView::SelectItems);
-    //setSelectionMode(QAbstractItemView::SingleSelection);
-    //setDragEnabled(true);
-    //setDropIndicatorShown(true);
-    setSize();
+    setSettings();
     mySound = new QSound(":/sounds/soundApple.wav");
 }
 
@@ -22,7 +16,7 @@ cell inventory::setCell(int newIndex, QString newType, int newAmount)
     return newCell;
 }
 
-void inventory::setSize(){
+void inventory::setSettings(){
     setSizeInventory(3);
     setRowCount(sizeInventory);
     setColumnCount(sizeInventory);
@@ -162,6 +156,9 @@ void inventory::dropEvent(QDropEvent *event)
 
 void inventory::mousePressEvent(QMouseEvent *event)
 {
+    //**************************************************
+    // создаю свой тип mimeData и начинаю перетаскивание,
+    // если нажатие левой кнопкой мыши
     if (itemAt(event->pos())) {
         dragStartPosition = event->pos();
         QTableWidgetItem *item = itemAt(event->pos());
@@ -186,6 +183,9 @@ void inventory::mousePressEvent(QMouseEvent *event)
             drag->setHotSpot(event->pos() - QPoint(item->column()*100, item->row()*100));
             drag->exec(Qt::CopyAction);
         }
+        //***********************************************************************
+        // по нажатию правой кнопкой происходит удаление или уменьшение
+        // текущего кол-ва элементов со звуком
         else if (event->button() == Qt::RightButton){
             mySound->play();
             if (map[currentCellIndex].amount > 1){
@@ -205,24 +205,13 @@ void inventory::mousePressEvent(QMouseEvent *event)
     }
 }
 
-
-/*void inventory::mouseMoveEvent(QMouseEvent *event)
-{
-
-}
-
-void inventory::mouseReleaseEvent(QMouseEvent *event)
-{
-
-}*/
-
 void inventory::dragMoveEvent(QDragMoveEvent *event)
 {
     if (event->mimeData()->hasFormat("application/x-dnditemdata")){
         event->acceptProposedAction();
         QAbstractItemView *d = reinterpret_cast<QAbstractItemView*>(this);
         QModelIndex index = indexAt(event->pos());
-        highlightedRect = d->visualRect(index);
+        highlightedRect = d->visualRect(index); // получаю текущий квадрат
 
         viewport()->update();
     }
@@ -233,8 +222,8 @@ void inventory::dragMoveEvent(QDragMoveEvent *event)
 
 void inventory::paintEvent(QPaintEvent *event)
 {
-    QTableWidget::paintEvent(event);  //let it paint the default stuff!
-    QPainter painter(this->viewport());  //you need to paint on the viewport
+    QTableWidget::paintEvent(event);  // перерисовка QTableWidget
+    QPainter painter(this->viewport());  // перерисовка на viewport();
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::blue);
     painter.drawRect(highlightedRect);

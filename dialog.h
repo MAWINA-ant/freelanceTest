@@ -34,37 +34,39 @@ private:
 
     QTcpServer *tcpServer;
     QTcpSocket *serverSocket;
-    quint16     nextBlockSize;
+    quint16     nextBlockSize; // длина следующего блока, полученного от сокета
 
 signals:
-    void newGame();
 
     void addedNewObject(QString, QString);              // сигнал для добавления строки в таблицу object в БД
     void removeObject(QString);                         // сигнал для удаления строки в таблицу object в БД
     void clearTableInventory();                         // сигнал для очистки таблицы inventory в БД
 
+    //**********************************************************
+    // сигналы для вызова слотов изменения объекта в другой роли
     void addToSocket(QString, int, int , int, QIcon);
     void changeToSocket(int, int);
     void removeToSocket(int);
-
-private slots:
-    void exit();    
-    void buttonMainMenuClicked();
+    void newGame(); // новая игра в двух ролях
+    //**********************************************************
 
 public slots:
 
-    void slotNewGame();
+    void slotNewGame(); // слот при нажатии кнопки новая игра главного меню
+    void exit();
+    void buttonMainMenuClicked(); // вызывает меню используя анимацию
     //*********************************************
-    //server slots
-    void slotNewConnection();
-    void slotReadClient();
+    //server слоты
+    void slotNewConnection(); // определение нового соединения с клиентом
+    void slotReadClient(); // для прочтения данных от клиента
     void slotSendNewGameToClient();
     void slotSendAddedToClient(QString,int,int,int,QIcon);
     void slotSendUpdateToClient(int,int);
     void slotSendDeleteToClient(int);
+    //*************************************************
 
     //***************************************************
-    //client slots
+    //client слоты
     void slotReadyRead();
     void slotError(QAbstractSocket::SocketError);
     void slotSendNewGameToServer();
@@ -72,9 +74,10 @@ public slots:
     void slotSendUpdateToServer(int,int);
     void slotSendDeleteToServer(int);
     void slotConnected();
+    //******************************************************
 
 protected:
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event); // по изменению размера меняется геометрия главного меню
 };
 
 #endif // DIALOG_H

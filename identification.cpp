@@ -3,12 +3,15 @@
 identification::identification(QWidget *parent)
     : QDialog(parent)
 {
+    setWindowFlags(Qt::CustomizeWindowHint |
+                   Qt::WindowTitleHint);
+    setWindowTitle("Выбор роли");
     serverRole = new QPushButton("Сервер");
     clientRole = new QPushButton("Клиент");
     QLabel *ipAddressLabel = new QLabel("IP адресс:");
     QLabel *portLabel = new QLabel("Порт:");
     ipAddressLine = new QLineEdit("localhost");
-    portLine = new QLineEdit("2323");
+    portLine = new QLineEdit("1234");
     QHBoxLayout *hLayout1 = new QHBoxLayout();
     QHBoxLayout *hLayout2 = new QHBoxLayout();
     QHBoxLayout *hLayout3 = new QHBoxLayout();
@@ -48,8 +51,3 @@ void identification::clientRoleChosen()
     close();
 }
 
-void identification::closeEvent(QCloseEvent *event)
-{
-    emit closeDialog();
-    event->accept();
-}

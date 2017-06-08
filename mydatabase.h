@@ -17,20 +17,20 @@ public:
 
 
 private:
-    void createDatabase();
-    bool createConnection();
+    void createDatabase(); // создает в БД таблицы, если соединение с базой установилось
+    bool createConnection(); // создание БД и установка соединения с ней
     QSqlDatabase db;
 
 signals:
     void sendData(QString, int, int ,QString);
 
 private slots:
-    void insertDataInventory(QString, int, int, int);
-    void updateDataInventory(int, int);
-    void removeDataInventory(int);
-    void insertDataObject(QString, QString);
-    void removeDataObject(QString);
-    void clearDataBase(int);
+    void insertDataInventory(QString, int, int, int); //добавление строки в таблице Inventory
+    void updateDataInventory(int, int); // обновление данных по номеру cellIndex (изменение кол-ва)
+    void removeDataInventory(int); //удалить строку по cellIdex
+    void insertDataObject(QString, QString); //добавить строку в таблицу object
+    void removeDataObject(QString); //удалить строку в таблице object по наименованию типа
+    void clearDataBase(int); //очищает таблицу Inventory от всех данных
     void receivedData();
 };
 

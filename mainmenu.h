@@ -18,8 +18,8 @@ signals:
 public slots:
 
 private slots:
-    void buttonExitClicked();
-    void buttonNewGameClicked();
+    void buttonExitClicked(); //вызов сигнала exit()
+    void buttonNewGameClicked(); //вызов сигнала newGame()
 
 private:
     QPushButton *buttonNewGame;
@@ -27,7 +27,7 @@ private:
     QColor backGroundColor;
 
 protected:
-    void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event); // перерисовка объекта с фоном другого цвета
 };
 
 #endif // MAINMENU_H

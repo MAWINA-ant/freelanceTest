@@ -29,8 +29,8 @@ signals:
 
     // QWidget interface
 protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event); // переопределяю метод для drug'n'drop и начинаю перетаскивание
+    void mouseMoveEvent(QMouseEvent *event); // в методе определяется началось ли движение объекта
 };
 
 #endif // MYOBJECT_H

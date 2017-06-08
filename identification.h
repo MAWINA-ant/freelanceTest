@@ -11,13 +11,14 @@ class identification : public QDialog
 public:
     identification(QWidget *parent = 0);
     ~identification();
-    QString getRole(){return currentRole;}
-    QString getIpAddress(){return ipAddress;}
-    int getPort(){return port;}
+    QString getRole(){return currentRole;} // возвращает роль для дальнейшего создания приложения
+                                           // в зависимости от неё
+    QString getIpAddress(){return ipAddress;} // записывается ip-адресс для создания сервера или
+                                              // коннекта клиента
+    int getPort(){return port;} // тоже что и для ip, только для порта
 
 signals:
     void chosenRole();
-    void closeDialog();
 
 private:
     QString currentRole;
@@ -29,11 +30,9 @@ private:
     QLineEdit *portLine;
 
 private slots:
-    void serverRoleChosen();
-    void clientRoleChosen();
+    void serverRoleChosen(); // устанавливает значения в приватные поля для сервера
+    void clientRoleChosen(); // устанавливает значения в приватные поля для клиента
 
-protected:
-    void closeEvent(QCloseEvent *event);
 };
 
 #endif // IDENTIFICATION_H

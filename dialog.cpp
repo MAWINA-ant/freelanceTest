@@ -65,11 +65,12 @@ Dialog::~Dialog()
 }
 
 void Dialog::createMenu(){
-    setWindowFlags(Qt::CustomizeWindowHint |
-                   Qt::WindowTitleHint |
+    setWindowFlags(Qt::CustomizeWindowHint |       // установка флагов главного окна
+                   Qt::WindowTitleHint |           // свернуть, закрыть, развернуть
                    Qt::WindowMinimizeButtonHint |
                    Qt::WindowMaximizeButtonHint |
                    Qt::WindowCloseButtonHint);
+    setWindowTitle("Инвентарий");
     buttonMainMenu->setEnabled(false);
     myObjectWidget->setEnabled(false);
     QHBoxLayout *hLayout = new QHBoxLayout();
@@ -148,7 +149,7 @@ void Dialog::slotReadClient()
         int cellIndex;
         int size;
         QIcon icon;
-        in >> operation;
+        in >> operation;      // определяю операцию
         if (operation == "add"){
             in >> typeObject >> amount >> cellIndex >> size >> icon;
             emit addToSocket(typeObject, amount, cellIndex, size, icon);

@@ -42,6 +42,8 @@ void myObject::mouseMoveEvent(QMouseEvent *event)
 
 void myObject::mousePressEvent(QMouseEvent *event)
 {
+    //******************************************************
+    // по нажатию левой кнопки мыши, создается объект drug и собственного типа  mimeData
     if (event->button() == Qt::LeftButton){
         dragStartPosition = event->pos();
         QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
